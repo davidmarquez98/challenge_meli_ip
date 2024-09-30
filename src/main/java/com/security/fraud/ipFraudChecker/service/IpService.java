@@ -45,6 +45,8 @@ public class IpService{
 
                     ipInfoMapper.fromJsonToEntity(countryApiResponse, ipInfoEntity);
 
+                    ipInfoEntity.setIpAddress(ip);
+
                     try {
                         return httpService.callApiCountryInfoByName(ipInfoEntity.getCountry());
                     } catch (IOException e) {
@@ -66,6 +68,9 @@ public class IpService{
                 .flatMap(thirdApiResponse -> {
 
                     ipInfoMapper.fromJsonToEntity(thirdApiResponse, ipInfoEntity);
+                    ipInfoEntity.setInvocations(1);
+
+                    ipRepository.save(ipInfoEntity);
 
                     return Mono.just(ipInfoEntity);
                 });

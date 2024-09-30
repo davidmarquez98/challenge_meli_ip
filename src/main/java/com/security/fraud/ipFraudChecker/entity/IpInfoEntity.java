@@ -39,6 +39,9 @@ public class IpInfoEntity {
     private String currentLocalTime;
 
     @Column("estimated_distance")
-    private String estimatedDistance;
+    private double estimatedDistance;
+
+    @Column("invocations")
+    private int invocations;
 
 }

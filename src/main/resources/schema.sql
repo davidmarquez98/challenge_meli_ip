@@ -8,5 +8,6 @@ CREATE TABLE ip_info (
     currency VARCHAR(50),
     currency_conversion VARCHAR(50),
     current_local_time VARCHAR(50),
-    estimated_distance VARCHAR(50)
+    estimated_distance VARCHAR(50),
+    invocations VARCHAR(50)
 );

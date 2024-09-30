@@ -26,13 +26,10 @@ public class HttpService {
         return httpClient.fetchApi(url);
     }
 
-    public Mono<JSONObject> callApiConversionCurrency(String ip) throws IOException {
+    public Mono<JSONObject> callApiConversionCurrency(String currency) throws IOException {
 
-        String url = "http://ip-api.com/json/";
+        String url = "https://api.fxratesapi.com/latest?currencies=usd&base=" + currency;
 
-        System.out.println("callApiConversionCurrency");
-
-        return Mono.just(new JSONObject());
-        //return httpClient.fetchApi(url);
+        return httpClient.fetchApi(url);
     }
 }

@@ -55,12 +55,10 @@ public class HttpClient{
                     return jsonObjectResponse;
                 })
                 .doOnSuccess(result -> {
-                    // Registrar la respuesta
-                    System.out.println("Response: " + result);
+
                 })
                 .doOnError(error -> {
-                    // Registrar el error
-                    System.err.println("Error: " + error.getMessage());
+
                 });
     }
 
