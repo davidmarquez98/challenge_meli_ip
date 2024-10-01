@@ -53,10 +53,13 @@ public class IpInfoMapperImpl implements IpInfoMapper{
             double longitudPaisIp = latitudLongitudArray.getDouble(1);
             double argentinaLat = -34.0;
             double argentinaLon = -64.0;
+            String fullMessageDistancia = "";
 
             double distanciaPaisIp = DistanceCalculator.calculateDistance(latitudPaisIp, longitudPaisIp, argentinaLat, argentinaLon);
             distanciaPaisIp = Math.round(distanciaPaisIp * 100.0) / 100.0;
-            ipInfoEntity.setEstimatedDistance(distanciaPaisIp);
+
+            fullMessageDistancia = distanciaPaisIp + " kms (" + argentinaLat + ", " + argentinaLon + ") a (" + latitudPaisIp + ", " + longitudPaisIp + ")";
+            ipInfoEntity.setEstimatedDistance(fullMessageDistancia);
         }
 
         if (jsonObject.has("languages")) {
@@ -90,7 +93,7 @@ public class IpInfoMapperImpl implements IpInfoMapper{
             String typeCurrency = ipInfoEntity.getCurrency();
             double mountUsd = jsonObject.getJSONObject("rates").getDouble("USD");
 
-            String fullMessageCurrency  = typeCurrency + "(1 " + typeCurrency + " = " + mountUsd + " USD)";
+            String fullMessageCurrency  = typeCurrency + " (1 " + typeCurrency + " = " + mountUsd + " USD)";
 
             ipInfoEntity.setCurrency(fullMessageCurrency);
         }
@@ -113,8 +116,6 @@ public class IpInfoMapperImpl implements IpInfoMapper{
     }
 
     @Override
-    public void fromEntityToModel(IpInfoEntity ipInfoEntity, IpInfoDTO ipInfoDTO) {
-
-    }
+    public void fromEntityToModel(IpInfoEntity ipInfoEntity, IpInfoDTO ipInfoDTO) {}
 
 }

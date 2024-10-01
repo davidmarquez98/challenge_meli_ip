@@ -46,3 +46,39 @@
 1727739409473:ear
 1727739411026:clear
 1727739815135:c
+1727796509486:cclcc
+1727802486439:traceip 1.178.63.255
+1727802622926:ear
+1727802624963:c
+1727802659176:traceip 1.178.63.255
+1727802894730:traceip     }
+1727802910244:tracepip 1.178.63.255
+1727802915460:traceip 1.178.63.255
+1727803481026:traceip package com.security.fraud.ipFraudChecker;
+1727803481882:import io.r2dbc.spi.ConnectionFactory;
+1727803481884:import org.springframework.boot.SpringApplication;
+1727803481888:import org.springframework.boot.autoconfigure.SpringBootApplication;
+1727803481890:import org.springframework.context.annotation.Bean;
+1727803481892:import org.springframework.core.io.ClassPathResource;
+1727803481895:import org.springframework.r2dbc.connection.init.ConnectionFactoryInitializer;
+1727803481897:import org.springframework.r2dbc.connection.init.ResourceDatabasePopulator;
+1727803481900:import org.springframework.web.reactive.config.EnableWebFlux;
+1727803481902:@SpringBootApplication
+1727803481903:@EnableWebFlux
+1727803481905:public class IpFraudCheckerApplication {
+1727803481908:public static void main(String[] args) { SpringApplication.run(IpFraudCheckerApplication.class, args); }
+1727803481909:@Bean
+1727803481911:ConnectionFactoryInitializer initializer(ConnectionFactory connectionFactory) {
+1727803481913:ConnectionFactoryInitializer initializer = new ConnectionFactoryInitializer();
+1727803481915:initializer.setConnectionFactory(connectionFactory);
+1727803481918:initializer.setDatabasePopulator(new ResourceDatabasePopulator(new ClassPathResource("schema.sql")));
+1727803481919:return initializer;
+1727803481920:}
+1727807059205:traceip 1.178.63.255
+1727807527441:tracetraceip 1.178.63.255
+1727807533369:traceip 1.178.63.255
+1727808418267:traceip
+1727808428652:traceip 1.178.63.255
+1727810002644:tracip 1.178.63.255
+1727810007881:traceip 1.178.63.255
+1727811319160:traceip 1.178.47.255

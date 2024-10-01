@@ -8,6 +8,9 @@ import org.springframework.shell.standard.ShellOption;
 import com.security.fraud.ipFraudChecker.service.IpService;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import java.io.IOException;
 
 @ShellComponent
@@ -33,13 +36,21 @@ public class IpCommands {
 
         // armar una respuesta con info entity y estadisticas
 
-
         return ipInfoEnitity.map(ipInfoEnitityFromMono -> formatIpInfo(ipInfoEnitityFromMono)).block();
     }
 
     private String formatIpInfo(IpInfoEntity ipInfo) {
+
+        System.out.println("---------------------------");
+
+        // Formato de fecha actual
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        String currentDate = LocalDateTime.now().format(dateFormatter);
+
         // Aquí formatearías la información para mostrarla de manera legible en la consola
-        return String.format("Country: %s\nISO Code: %s\nLanguages: %s\nCurrency: %s\nTime: %s\nDistance: %s km",
+        return String.format("IP: %s, fecha actual: %s\nPaís: %s \nISO Code: %s\nIdiomas: %s\nMoneda: %s\nHora: %s \nDistancia estimada: %s",
+                ipInfo.getIpAddress(),
+                currentDate,
                 ipInfo.getCountry(),
                 ipInfo.getIsoCode(),
                 ipInfo.getLanguages(),

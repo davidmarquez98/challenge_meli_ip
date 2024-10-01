@@ -1,41 +1,32 @@
 package com.security.fraud.ipFraudChecker;
 
+import io.r2dbc.spi.ConnectionFactory;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import org.springframework.context.annotation.Bean;
+
+import org.springframework.core.io.ClassPathResource;
+
+import org.springframework.r2dbc.connection.init.ConnectionFactoryInitializer;
+import org.springframework.r2dbc.connection.init.ResourceDatabasePopulator;
+
+import org.springframework.web.reactive.config.EnableWebFlux;
+
+
 @SpringBootApplication
+@EnableWebFlux
 public class IpFraudCheckerApplication {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) { SpringApplication.run(IpFraudCheckerApplication.class, args); }
 
-		//SpringApplication.run(IpFraudCheckerApplication.class, args);
-		ConnectionFactory connectionFactory = ConnectionFactories.get("r2dbc:h2:mem:///test?options=DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE");
-
-		R2dbcEntityTemplate template = new R2dbcEntityTemplate(connectionFactory);
-
-		template.getDatabaseClient().sql("CREATE TABLE person" +
-						"(id VARCHAR(255) PRIMARY KEY," +
-						"name VARCHAR(255)," +
-						"age INT)")
-				.fetch()
-				.rowsUpdated()
-				.as(StepVerifier::create)
-				.expectNextCount(1)
-				.verifyComplete();
-
-		template.insert(Person.class)
-				.using(new Person("joe", "Joe", 34))
-				.as(StepVerifier::create)
-				.expectNextCount(1)
-				.verifyComplete();
-
-		template.select(Person.class)
-				.first()
-				.doOnNext(it -> log.info(it))
-				.as(StepVerifier::create)
-				.expectNextCount(1)
-				.verifyComplete();
-
+	@Bean
+	ConnectionFactoryInitializer initializer(ConnectionFactory connectionFactory) {
+		ConnectionFactoryInitializer initializer = new ConnectionFactoryInitializer();
+		initializer.setConnectionFactory(connectionFactory);
+		initializer.setDatabasePopulator(new ResourceDatabasePopulator(new ClassPathResource("schema.sql")));
+		return initializer;
 	}
 
 }

@@ -4,7 +4,6 @@ import com.security.fraud.ipFraudChecker.entity.IpInfoEntity;
 import com.security.fraud.ipFraudChecker.mapper.IpInfoMapperImpl;
 import com.security.fraud.ipFraudChecker.mapper.IpInfoMapper;
 import com.security.fraud.ipFraudChecker.repository.IpRepository;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -27,16 +26,36 @@ public class IpService{
         return getIpInfoExtern(ip);
     }
 
-    private Mono<IpInfoEntity> getIpInfoExtern(String ip) throws IOException {
+    private Mono<IpInfoEntity> getIpInfoExtern(String ip){
         return ipRepository.findByIpAddress(ip)
-                .switchIfEmpty(buildIpInfoFromApi(ip)); // Llama a la API si no se encuentra la IP
+
+                // Pais con dicho ip existe
+                .flatMap(ipInfoEntityFound -> {
+
+                    System.out.println("Entidad encontrada: " + ipInfoEntityFound);
+                    int invocations = ipInfoEntityFound.getInvocations();
+                    invocations = invocations + 1;
+                    ipInfoEntityFound.setInvocations(invocations);
+
+                    ipRepository.save(ipInfoEntityFound).subscribe();
+
+                    return Mono.just(ipInfoEntityFound);
+                })
+
+                // Pais con dicho ip no existe
+                .switchIfEmpty(Mono.defer(() -> {
+                    try {
+                        System.out.println("No se encontró la entidad, construyendo desde la API");
+                        return buildIpInfoFromApi(ip);
+                    } catch (IOException e) {
+                        return Mono.error(new RuntimeException("Error al construir desde la API", e));
+                    }
+                }));
     }
 
     private Mono<IpInfoEntity> buildIpInfoFromApi(String ip) throws IOException {
 
         IpInfoEntity ipInfoEntity = new IpInfoEntity();
-
-        System.out.println("buildIpInfoFromApi - NO EXISTE");
 
         return httpService
                 .callApiCountryByIp(ip)
@@ -70,7 +89,10 @@ public class IpService{
                     ipInfoMapper.fromJsonToEntity(thirdApiResponse, ipInfoEntity);
                     ipInfoEntity.setInvocations(1);
 
-                    ipRepository.save(ipInfoEntity);
+                    ipRepository.save(ipInfoEntity)
+                            .doOnSuccess(savedEntity -> System.out.println("Guardado: " + savedEntity))
+                            .doOnError(error -> System.err.println("Error al guardar la entidad: " + error.getMessage()))
+                            .subscribe();
 
                     return Mono.just(ipInfoEntity);
                 });
