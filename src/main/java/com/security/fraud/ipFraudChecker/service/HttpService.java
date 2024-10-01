@@ -12,24 +12,18 @@ public class HttpService {
 
     private final HttpClient httpClient = new HttpClient();
 
-    public Mono<JSONObject> callApiCountryByIp(String ip) throws IOException {
-
+    public Mono<JSONObject> callApiCountryByIp(String ip){
         String url = "http://ip-api.com/json/" + ip;
-
         return httpClient.fetchApi(url);
     }
 
-    public Mono<JSONObject> callApiCountryInfoByName(String country) throws IOException {
-
+    public Mono<JSONObject> callApiCountryInfoByName(String country){
         String url = "https://restcountries.com/v3.1/name/" + country;
-
         return httpClient.fetchApi(url);
     }
 
-    public Mono<JSONObject> callApiConversionCurrency(String currency) throws IOException {
-
+    public Mono<JSONObject> callApiConversionCurrency(String currency){
         String url = "https://api.fxratesapi.com/latest?currencies=usd&base=" + currency;
-
         return httpClient.fetchApi(url);
     }
 }

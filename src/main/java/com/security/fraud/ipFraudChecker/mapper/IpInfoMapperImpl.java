@@ -10,86 +10,100 @@ import java.time.format.DateTimeFormatter;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class IpInfoMapperImpl implements IpInfoMapper{
 
     @Override
     public void fromJsonToEntity(JSONObject jsonObject, IpInfoEntity ipInfoEntity) {
 
-        if (jsonObject.has("country") && !jsonObject.isNull("country")) {
+        String country = jsonObject.optString("country", null);
+        JSONArray timezones = jsonObject.optJSONArray("timezones");
+        String countryCode = jsonObject.optString("countryCode", null);
+        JSONArray latlng = jsonObject.optJSONArray("latlng");
+        JSONObject languages = jsonObject.optJSONObject("languages");
+        JSONObject currencies = jsonObject.optJSONObject("currencies");
+        JSONObject rates = jsonObject.optJSONObject("rates");
+
+        if (country != null) {
             String pais = jsonObject.getString("country");
             ipInfoEntity.setCountry(pais);
         }
 
 
-        if (jsonObject.has("timezones") && !jsonObject.isNull("timezones")) {
-            JSONArray timezonesArray = jsonObject.getJSONArray("timezones");
+        if (timezones != null) {
             StringBuilder fullMessageTimeZone = new StringBuilder();
 
-            for (int i = 0; i < timezonesArray.length(); i++) {
-                String timezone = timezonesArray.getString(i);
-                String formattedTime = getFormattedTime(timezone);
+            for (int i = 0; i < timezones.length(); i++) {
+                String timezone = timezones.getString(i);
+                fullMessageTimeZone.append(getFormattedTime(timezone));
 
-                if(i != 0 && timezonesArray.length() == 1 || i + 1 != timezonesArray.length()){
-                    formattedTime = formattedTime + " o ";
+                if (i + 1 < timezones.length()) {
+                    fullMessageTimeZone.append(" o ");
                 }
-
-                fullMessageTimeZone.append(formattedTime);
             }
 
             ipInfoEntity.setCurrentLocalTime(fullMessageTimeZone.toString());
         }
 
 
-        if (jsonObject.has("countryCode") && !jsonObject.isNull("countryCode")) {
+        if (countryCode != null) {
             String isoCode = jsonObject.getString("countryCode");
             ipInfoEntity.setIsoCode(isoCode);
         }
 
 
-        if (jsonObject.has("latlng") && !jsonObject.isNull("latlng")) {
+        if (latlng != null) {
             JSONArray latitudLongitudArray = jsonObject.getJSONArray("latlng");
             double latitudPaisIp = latitudLongitudArray.getDouble(0);
             double longitudPaisIp = latitudLongitudArray.getDouble(1);
             double argentinaLat = -34.0;
             double argentinaLon = -64.0;
-            String fullMessageDistancia = "";
+
+//            String fullMessageDistancia = "";
+//
+//            double distanciaPaisIp = DistanceCalculator.calculateDistance(latitudPaisIp, longitudPaisIp, argentinaLat, argentinaLon);
+//            distanciaPaisIp = Math.round(distanciaPaisIp * 100.0) / 100.0;
+//
+//            fullMessageDistancia = distanciaPaisIp + " kms (" + argentinaLat + ", " + argentinaLon + ") a (" + latitudPaisIp + ", " + longitudPaisIp + ")";
+//            ipInfoEntity.setEstimatedDistance(fullMessageDistancia);
 
             double distanciaPaisIp = DistanceCalculator.calculateDistance(latitudPaisIp, longitudPaisIp, argentinaLat, argentinaLon);
-            distanciaPaisIp = Math.round(distanciaPaisIp * 100.0) / 100.0;
-
-            fullMessageDistancia = distanciaPaisIp + " kms (" + argentinaLat + ", " + argentinaLon + ") a (" + latitudPaisIp + ", " + longitudPaisIp + ")";
+            String fullMessageDistancia = String.format("%.2f kms (%f, %f) a (%f, %f)", distanciaPaisIp, argentinaLat, argentinaLon, latitudPaisIp, longitudPaisIp);
             ipInfoEntity.setEstimatedDistance(fullMessageDistancia);
         }
 
-        if (jsonObject.has("languages")) {
-            JSONObject languages = jsonObject.getJSONObject("languages");
-            StringBuilder idiomas = new StringBuilder();
-
-            Iterator<String> keys = languages.keys();
-            while (keys.hasNext()) {
-                String key = keys.next();
-                String language = languages.getString(key);
-                idiomas.append(language);
-
-                if (keys.hasNext()) {
-                    idiomas.append(", ");
-                }
-            }
-
-            String idiomasStr = idiomas.toString();
+        if (languages != null) {
+            String idiomasStr = languages.toMap().values().stream()
+                    .map(Object::toString)
+                    .collect(Collectors.joining(", "));
             ipInfoEntity.setLanguages(idiomasStr);
+//            JSONObject languages = jsonObject.getJSONObject("languages");
+//            StringBuilder idiomas = new StringBuilder();
+//
+//            Iterator<String> keys = languages.keys();
+//            while (keys.hasNext()) {
+//                String key = keys.next();
+//                String language = languages.getString(key);
+//                idiomas.append(language);
+//
+//                if (keys.hasNext()) {
+//                    idiomas.append(", ");
+//                }
+//            }
+//
+//            String idiomasStr = idiomas.toString();
+//            ipInfoEntity.setLanguages(idiomasStr);
         }
 
-        if (jsonObject.has("currencies") && !jsonObject.isNull("currencies")) {
-            JSONObject currencies = jsonObject.getJSONObject("currencies");
-
+        if (currencies != null) {
             String currencyCode = currencies.keys().next();
             ipInfoEntity.setCurrency(currencyCode);
         }
 
-        if (jsonObject.has("rates") && !jsonObject.isNull("rates")) {
-
+        if (rates != null) {
             String typeCurrency = ipInfoEntity.getCurrency();
             double mountUsd = jsonObject.getJSONObject("rates").getDouble("USD");
 
@@ -100,19 +114,15 @@ public class IpInfoMapperImpl implements IpInfoMapper{
 
     }
 
+    private static final Map<String, String> timezoneCache = new ConcurrentHashMap<>();
+
     private static String getFormattedTime(String timeZone) {
-
-        ZoneOffset offset = ZoneOffset.of(timeZone.replace("UTC", ""));
-
-        ZonedDateTime nowInLocal = ZonedDateTime.now(offset);
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-
-        String time = nowInLocal.format(formatter);
-
-        String formattedTime = String.format("%s (UTC%s)", time, timeZone.replace("UTC", ""));
-
-        return formattedTime;
+        return timezoneCache.computeIfAbsent(timeZone, tz -> {
+            ZoneOffset offset = ZoneOffset.of(tz.replace("UTC", ""));
+            ZonedDateTime nowInLocal = ZonedDateTime.now(offset);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+            return String.format("%s (UTC%s)", nowInLocal.format(formatter), tz.replace("UTC", ""));
+        });
     }
 
     @Override
