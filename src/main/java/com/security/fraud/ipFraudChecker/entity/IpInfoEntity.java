@@ -38,8 +38,11 @@ public class IpInfoEntity {
     @Column("current_local_time")
     private String currentLocalTime;
 
+    @Column("message_estimated_distance")
+    private String messageEstimatedDistance;
+
     @Column("estimated_distance")
-    private String estimatedDistance;
+    private Double estimatedDistance;
 
     @Column("invocations")
     private int invocations;

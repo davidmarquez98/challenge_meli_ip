@@ -8,6 +8,13 @@ CREATE TABLE IF NOT EXISTS ip_info (
     currency VARCHAR(50),
     currency_conversion VARCHAR(50),
     current_local_time VARCHAR(255),
-    estimated_distance VARCHAR(255),
+    message_estimated_distance VARCHAR(255),
+    estimated_distance DOUBLE,
     invocations VARCHAR(50)
+);
+
+CREATE TABLE IF NOT EXISTS estadisticas (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    total_estimated_distance DOUBLE,
+    invocations_count INTEGER
 );

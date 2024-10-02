@@ -70,9 +70,10 @@ public class IpInfoMapperImpl implements IpInfoMapper{
 //            fullMessageDistancia = distanciaPaisIp + " kms (" + argentinaLat + ", " + argentinaLon + ") a (" + latitudPaisIp + ", " + longitudPaisIp + ")";
 //            ipInfoEntity.setEstimatedDistance(fullMessageDistancia);
 
-            double distanciaPaisIp = DistanceCalculator.calculateDistance(latitudPaisIp, longitudPaisIp, argentinaLat, argentinaLon);
+            Double distanciaPaisIp = DistanceCalculator.calculateDistance(latitudPaisIp, longitudPaisIp, argentinaLat, argentinaLon);
             String fullMessageDistancia = String.format("%.2f kms (%f, %f) a (%f, %f)", distanciaPaisIp, argentinaLat, argentinaLon, latitudPaisIp, longitudPaisIp);
-            ipInfoEntity.setEstimatedDistance(fullMessageDistancia);
+            ipInfoEntity.setMessageEstimatedDistance(fullMessageDistancia);
+            ipInfoEntity.setEstimatedDistance(distanciaPaisIp);
         }
 
         if (languages != null) {

@@ -1,24 +1,26 @@
 package com.security.fraud.ipFraudChecker.commands;
 
-import com.security.fraud.ipFraudChecker.entity.EstadisticasEntity;
 import com.security.fraud.ipFraudChecker.entity.IpInfoEntity;
+import com.security.fraud.ipFraudChecker.service.EstadisticasService;
+import com.security.fraud.ipFraudChecker.service.IpService;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
-import com.security.fraud.ipFraudChecker.service.IpService;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import java.io.IOException;
 
 @ShellComponent
 public class IpCommands {
 
+    private final EstadisticasService estadisticasService;
+
     private final IpService ipService;
 
-    public IpCommands(IpService ipService) {
+    public IpCommands(EstadisticasService estadisticasService, IpService ipService) {
+        this.estadisticasService = estadisticasService;
         this.ipService = ipService;
     }
 
@@ -28,29 +30,47 @@ public class IpCommands {
     }
 
     @ShellMethod(key = "traceip")
-    public String traceip(@ShellOption String ip) throws IOException {
-        //EstadisticasEntity estadisticasEntity = ipService.getEstadisticas(ipInfoEnitity);
-
-        return ipService.getIpInfo(ip).map(ipInfoEnitityFromMono -> formatIpInfo(ipInfoEnitityFromMono)).block();
+    public void traceip(@ShellOption String ip){
+        ipService.getIpInfo(ip)
+                 .flatMap(ipInfoEntityFromMono -> formatIpInfo(ipInfoEntityFromMono))
+                 .doOnNext(a -> System.out.println(a)).subscribe();
     }
 
-    private String formatIpInfo(IpInfoEntity ipInfo) {
 
-        System.out.println("---------------------------");
+    private Mono<String> formatIpInfo(IpInfoEntity ipInfo) {
 
-        // Formato de fecha actual
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-        String currentDate = LocalDateTime.now().format(dateFormatter);
+        // Obtener las distancias
+        Mono<Double> minDistance = ipService.getMinDistance();
+        Mono<Double> maxDistance = ipService.getMaxDistance();
+        Mono<Double> avgDistance = estadisticasService.getPromedioDistancias(ipInfo.getEstimatedDistance());
 
-        // Aquí formatearías la información para mostrarla de manera legible en la consola
-        return String.format("IP: %s, fecha actual: %s\nPaís: %s \nISO Code: %s\nIdiomas: %s\nMoneda: %s\nHora: %s \nDistancia estimada: %s",
-                ipInfo.getIpAddress(),
-                currentDate,
-                ipInfo.getCountry(),
-                ipInfo.getIsoCode(),
-                ipInfo.getLanguages(),
-                ipInfo.getCurrency(),
-                ipInfo.getCurrentLocalTime(),
-                ipInfo.getEstimatedDistance());
+        // Combinar la información de la IP con las distancias
+        return Mono.zip(minDistance, maxDistance, avgDistance)
+                .map(tuple -> {
+                    Double minDist = tuple.getT1();       // Distancia mínima
+                    Double maxDist = tuple.getT2();       // Distancia máxima
+                    Double avgDist = tuple.getT3();       // Distancia máxima
+
+                    // Formatear la fecha actual
+                    String currentDate = LocalDateTime.now().toString();
+
+                    // Formatear el mensaje final
+                    return String.format(
+                            "IP: %s, fecha actual: %s\nPaís: %s \nISO Code: %s\nIdiomas: %s\nMoneda: %s\nHora: %s \nDistancia estimada: %s\n" +
+                                    "Distancia más cercana a Buenos Aires: %.2f km\nDistancia más lejana a Buenos Aires: %.2f km\nDistancia promedio de todas las ejecuciones que se hayan hecho del servicio: %.2f km",
+                            ipInfo.getIpAddress(),
+                            currentDate,
+                            ipInfo.getCountry(),
+                            ipInfo.getIsoCode(),
+                            ipInfo.getLanguages(),
+                            ipInfo.getCurrency(),
+                            ipInfo.getCurrentLocalTime(),
+                            ipInfo.getMessageEstimatedDistance(),
+                            minDist,
+                            maxDist,
+                            avgDist
+                    );
+                });
+
     }
 }
