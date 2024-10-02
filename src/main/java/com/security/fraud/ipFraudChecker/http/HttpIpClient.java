@@ -6,13 +6,35 @@ import org.json.JSONObject;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
+import reactor.netty.http.client.HttpClient;
+import reactor.netty.resources.ConnectionProvider;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 
-public class HttpClient{
+import java.time.Duration;
+
+public class HttpIpClient{
 
     private final WebClient webClient;
 
-    public HttpClient() {
-        this.webClient = WebClient.create();
+    public HttpIpClient() {
+        // Configurar el pool de conexiones
+        ConnectionProvider connectionProvider = ConnectionProvider.builder("custom")
+                .maxConnections(50)  // Máximo número de conexiones
+                .pendingAcquireTimeout(Duration.ofSeconds(60))  // Tiempo máximo de espera
+                .maxIdleTime(Duration.ofSeconds(30))  // Tiempo máximo de inactividad
+                .maxLifeTime(Duration.ofMinutes(5))  // Tiempo máximo de vida de una conexión
+                .build();
+
+        HttpClient httpClient = HttpClient.create(connectionProvider)
+                .responseTimeout(Duration.ofSeconds(10));  // Tiempo máximo de espera para la respuesta
+
+        // Crear WebClient con HttpClient configurado
+        this.webClient = WebClient.builder()
+                .clientConnector(new ReactorClientHttpConnector(httpClient))  // Configuración del WebClient
+                .build();
     }
 
 

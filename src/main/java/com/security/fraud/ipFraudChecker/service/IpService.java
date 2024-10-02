@@ -17,7 +17,7 @@ public class IpService{
     private IpRepository ipRepository;
 
     @Autowired
-    private HttpService httpService;
+    private HttpIpService httpService;
 
     private final IpInfoMapper ipInfoMapper = new IpInfoMapperImpl();
 

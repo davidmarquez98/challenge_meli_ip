@@ -1,6 +1,6 @@
 package com.security.fraud.ipFraudChecker.service;
 
-import com.security.fraud.ipFraudChecker.http.HttpClient;
+import com.security.fraud.ipFraudChecker.http.HttpIpClient;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -8,9 +8,9 @@ import reactor.core.publisher.Mono;
 import java.io.IOException;
 
 @Service
-public class HttpService {
+public class HttpIpService {
 
-    private final HttpClient httpClient = new HttpClient();
+    private final HttpIpClient httpClient = new HttpIpClient();
 
     public Mono<JSONObject> callApiCountryByIp(String ip){
         String url = "http://ip-api.com/json/" + ip;
