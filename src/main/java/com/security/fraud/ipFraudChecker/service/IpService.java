@@ -61,20 +61,20 @@ public class IpService{
         ipInfoEntity.setIpAddress(ip);
 
         return httpService.callApiCountryByIp(ip)
-                .doOnSuccess(savedEntity -> System.out.println("callApiCountryByIp: " + savedEntity))
+                .doOnSuccess(savedEntity -> System.out.println("callApiCountryByIp"))
                 .flatMap(countryApiResponse -> {
 
                     ipInfoMapper.fromJsonToEntity(countryApiResponse, ipInfoEntity);
 
                     return httpService.callApiCountryInfoByName(ipInfoEntity.getCountry())
-                            .doOnSuccess(savedEntity -> System.out.println("callApiCountryInfoByName: " + savedEntity));
+                            .doOnSuccess(savedEntity -> System.out.println("callApiCountryInfoByName"));
                 })
                 .flatMap(countryInfoApiResponse -> {
 
                     ipInfoMapper.fromJsonToEntity(countryInfoApiResponse, ipInfoEntity);
 
                     return httpService.callApiConversionCurrency(ipInfoEntity.getCurrency())
-                            .doOnSuccess(savedEntity -> System.out.println("callApiConversionCurrency: " + savedEntity));
+                            .doOnSuccess(savedEntity -> System.out.println("callApiConversionCurrency|"));
                 })
                 .flatMap(currencyApiResponse -> {
 
