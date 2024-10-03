@@ -1,10 +1,10 @@
-package com.security.fraud.IpKafkaMonitor;
+package com.security.fraud.ipFraudChecker;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class IpKafkaMonitorApplicationTests {
+class IpFraudCheckerApplicationTests {
 
 	@Test
 	void contextLoads() {
