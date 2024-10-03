@@ -1,0 +1,90 @@
+1727630749374:hello-world
+1727630791815:traceip 1
+1727630803839:hello-world
+1727630957427:trace-ip
+1727630962072:traceip
+1727630967304:traceip 1|
+1727630982790:cls
+1727630985317:clear
+1727630988336:ls
+1727644714951:traceip
+1727644718785:traceip 2
+1727644852624:traceip
+1727644857246:traceip 1
+1727645100259:traceip 2
+1727645664923:triceip 2
+1727645676829:traceip�2
+1727645683104:traceip 3
+1727645844358:ear
+1727646043324:traceip 2
+1727646360781:traceip 1
+1727647387815:traceip 23
+1727647582700:traceip 2
+1727650456948:ear
+1727669189288:traceip 24.48.0.1
+1727669449341:traceip             .uri(uriBuilder -> uriBuilder
+1727669495773:traceip 24.48.0.1
+1727713714112:tracetraceip 24.48.0.1
+1727713719787:traceip 24.48.0.1
+1727718476611:traceip != timezonesArray.length()
+1727718487830:traceip 24.48.0.1
+1727718556993:traceip 09:48:08 (-08:00)
+1727718564630:traceip 24.48.0.1
+1727726570570:traceip 1.178.63.255
+1727726658159:traceip 24.48.0.1
+1727729833866:traceip 1.178.47.255
+1727729870951:traceip 1.178.63.255
+1727734246845:traceip1.178.63.255
+1727734252553:traceip 1.178.63.255
+1727734455697:1.178.63.255
+1727734465290:traceip 1.178.63.255
+1727734914536:ear
+1727734917200:[A[Ac
+1727735068020:ccc
+1727735821750:ad
+1727738099836:ccc
+1727739409473:ear
+1727739411026:clear
+1727739815135:c
+1727796509486:cclcc
+1727802486439:traceip 1.178.63.255
+1727802622926:ear
+1727802624963:c
+1727802659176:traceip 1.178.63.255
+1727802894730:traceip     }
+1727802910244:tracepip 1.178.63.255
+1727802915460:traceip 1.178.63.255
+1727803481026:traceip package com.security.fraud.ipFraudChecker;
+1727803481882:import io.r2dbc.spi.ConnectionFactory;
+1727803481884:import org.springframework.boot.SpringApplication;
+1727803481888:import org.springframework.boot.autoconfigure.SpringBootApplication;
+1727803481890:import org.springframework.context.annotation.Bean;
+1727803481892:import org.springframework.core.io.ClassPathResource;
+1727803481895:import org.springframework.r2dbc.connection.init.ConnectionFactoryInitializer;
+1727803481897:import org.springframework.r2dbc.connection.init.ResourceDatabasePopulator;
+1727803481900:import org.springframework.web.reactive.config.EnableWebFlux;
+1727803481902:@SpringBootApplication
+1727803481903:@EnableWebFlux
+1727803481905:public class IpFraudCheckerApplication {
+1727803481908:public static void main(String[] args) { SpringApplication.run(IpFraudCheckerApplication.class, args); }
+1727803481909:@Bean
+1727803481911:ConnectionFactoryInitializer initializer(ConnectionFactory connectionFactory) {
+1727803481913:ConnectionFactoryInitializer initializer = new ConnectionFactoryInitializer();
+1727803481915:initializer.setConnectionFactory(connectionFactory);
+1727803481918:initializer.setDatabasePopulator(new ResourceDatabasePopulator(new ClassPathResource("schema.sql")));
+1727803481919:return initializer;
+1727803481920:}
+1727807059205:traceip 1.178.63.255
+1727807527441:tracetraceip 1.178.63.255
+1727807533369:traceip 1.178.63.255
+1727808418267:traceip
+1727808428652:traceip 1.178.63.255
+1727810002644:tracip 1.178.63.255
+1727810007881:traceip 1.178.63.255
+1727811319160:traceip 1.178.47.255
+1727815569926:traceip´1.178.47.255
+1727815573455:traceip 1.178.47.255
+1727815688752:traceip ipService.getIpInfo(ip);
+1727815696091:traceip 1.178.47.255
+1727891921061:traceip 1.0.3.255
+1727891933863:traceip 1.178.47.255
