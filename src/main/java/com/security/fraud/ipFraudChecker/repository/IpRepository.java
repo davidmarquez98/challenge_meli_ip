@@ -10,7 +10,6 @@ import reactor.core.publisher.Mono;
 @Repository
 public interface IpRepository extends ReactiveSortingRepository<IpInfoEntity, Long> {
 
-    // GET BY IP
     Mono<IpInfoEntity> findByIpAddress(String ipAddress);
 
     @Query("SELECT MIN(estimated_distance) FROM ip_info")
@@ -20,6 +19,5 @@ public interface IpRepository extends ReactiveSortingRepository<IpInfoEntity, Lo
     Mono<Double> findMaxDistance();
 
     Mono<IpInfoEntity> save(IpInfoEntity ipInfoEntity);
-
 
 }

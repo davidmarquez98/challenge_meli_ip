@@ -12,10 +12,10 @@ import reactor.core.publisher.Mono;
 public class IpService {
 
     @Autowired
-    private IpRepository ipRepository;
+    IpRepository ipRepository;
 
     @Autowired
-    private HttpIpService httpService;
+    HttpIpService httpService;
 
     private final IpInfoMapper ipInfoMapper = new IpInfoMapperImpl();
 

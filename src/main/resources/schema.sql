@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS ip_info (
     invocations VARCHAR(50)
 );
 
-CREATE TABLE IF NOT EXISTS estadisticas (
+CREATE TABLE IF NOT EXISTS stats (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     total_estimated_distance DOUBLE,
     invocations_count INTEGER

@@ -10,8 +10,8 @@ import org.springframework.data.relational.core.mapping.Table;
 
 @Getter
 @Setter
-@Table(name = "estadisticas")
-public class EstadisticasEntity {
+@Table(name = "stats")
+public class StatsEntity {
 
     @Id
     private Long id;
