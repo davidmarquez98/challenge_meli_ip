@@ -1,7 +1,6 @@
-package com.ipFraud.ipKafka.service;
+package com.security.fraud.ipFraudChecker.service;
 
-
-import com.ipFraud.ipKafka.http.HttpIpClient;
+import com.security.fraud.ipFraudChecker.http.HttpIpClient;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;

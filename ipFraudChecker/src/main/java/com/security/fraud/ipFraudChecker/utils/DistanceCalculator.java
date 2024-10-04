@@ -1,4 +1,4 @@
-package com.ipFraud.ipKafka.utils;
+package com.security.fraud.ipFraudChecker.utils;
 
 public class DistanceCalculator {
     public static double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
