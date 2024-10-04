@@ -7,14 +7,19 @@
 ```
    
 3. Construir la aplicación.
+```
     mvn clean package
+```
 
-4. Construir la imagen Docker.
+5. Construir la imagen Docker.
+```
   docker build -t nombre-imagen .
+```
 
-5. Ejecutar el contenedor.
+7. Ejecutar el contenedor.
+```
    docker run -it --rm davidarielmarquez/ip-fraud-checker:latest
-
+```
 
 # Instrucciones de como usar la aplicación
 
