@@ -63,14 +63,25 @@
 		</dependency>
 
 		<!-- Reactor Test -->
+		<!-- Reactor Test for StepVerifier -->
 		<dependency>
 			<groupId>io.projectreactor</groupId>
 			<artifactId>reactor-test</artifactId>
+			<version>3.4.6</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- JUnit 5 -->
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+			<version>5.7.1</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-api</artifactId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<version>5.7.1</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -112,6 +123,17 @@
 			<groupId>com.vaadin.external.google</groupId>
 			<artifactId>android-json</artifactId>
 			<version>0.0.20131108.vaadin1</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.projectreactor</groupId>
+			<artifactId>reactor-test</artifactId>
+			<version>3.6.10</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 

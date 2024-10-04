@@ -2,7 +2,7 @@ package com.security.fraud.ipFraudChecker.utils;
 
 public class DistanceCalculator {
     public static double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
-        final int R = 6371; // Radio de la Tierra en kilómetros
+        final int R = 6371;
 
         double latDistance = Math.toRadians(lat2 - lat1);
         double lonDistance = Math.toRadians(lon2 - lon1);

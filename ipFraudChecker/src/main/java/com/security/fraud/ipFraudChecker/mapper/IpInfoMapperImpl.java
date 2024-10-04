@@ -15,6 +15,8 @@ import java.util.stream.IntStream;
 
 public class IpInfoMapperImpl implements IpInfoMapper{
 
+    private static final Map<String, String> timezoneCache = new ConcurrentHashMap<>();
+
     @Override
     public void fromJsonToEntity(JSONObject jsonObject, IpInfoEntity ipInfoEntity) {
 
@@ -81,10 +83,7 @@ public class IpInfoMapperImpl implements IpInfoMapper{
 
             ipInfoEntity.setCurrency(fullMessageCurrency);
         }
-
     }
-
-    private static final Map<String, String> timezoneCache = new ConcurrentHashMap<>();
 
     private static String getFormattedTime(String timeZone) {
         return timezoneCache.computeIfAbsent(timeZone, tz -> {

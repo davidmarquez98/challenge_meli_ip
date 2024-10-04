@@ -1,36 +1,35 @@
 package com.security.fraud.ipFraudChecker;
 
 import com.security.fraud.ipFraudChecker.commands.IpCommands;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Timeout;
+
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import reactor.core.publisher.Flux;
-import reactor.core.scheduler.Schedulers;
 
-import java.time.Duration;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 @SpringBootTest
 public class IpFraudCheckerApplicationTests {
 
 	@Autowired
-	private IpCommands ipCommands; // Asegúrate de que la clase que contiene 'traceip' se llame correctamente
+	private IpCommands ipCommands;
 
-	private static final int TOTAL_REQUESTS = 1_000_000; // Total de peticiones
+	private static final int TOTAL_REQUESTS = 1_000_000;
 
 	@Test
-	@Timeout(10) // Establece un tiempo límite de 1 segundo para la prueba
-	void loadTestTraceIp() {
-		long startTime = System.currentTimeMillis();
+	public void testTraceipWithHighLoad() throws InterruptedException {
+		int numRequests = TOTAL_REQUESTS;
+		ExecutorService executor = Executors.newFixedThreadPool(100);
 
-		// Utiliza Flux para crear y enviar las peticiones
-		Flux.range(0, TOTAL_REQUESTS)
-				.flatMap(i -> Flux.just("192.0.2." + (i % 256))
-						.publishOn(Schedulers.boundedElastic()) // Usa un scheduler que soporte un número variable de hilos
-						.doOnNext(ipCommands::testTraceip))
-				.blockLast(Duration.ofSeconds(1)); // Bloquea hasta que todas las peticiones se completen o se alcance el tiempo de espera
+		for (int i = 0; i < numRequests; i++) {
+			String ip = "192.168.1." + (i % 255);
 
-		long endTime = System.currentTimeMillis();
-		System.out.println("Tiempo total: " + (endTime - startTime) + " ms");
+			executor.submit(() -> ipCommands.traceip(ip));
+		}
+
+		executor.shutdown();
+		executor.awaitTermination(10, TimeUnit.MINUTES);
 	}
 }

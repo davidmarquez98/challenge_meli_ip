@@ -5,7 +5,7 @@ FROM openjdk:21-jdk-slim
 WORKDIR /app
 
 # Copia el archivo JAR de tu aplicación al contenedor
-COPY target/ip-fraud-checker-0.0.1-SNAPSHOT.jar app.jar
+COPY target/ipFraudChecker-0.0.1-SNAPSHOT.jar app.jar
 
 # Expone el puerto que tu aplicación va a usar
 EXPOSE 8080

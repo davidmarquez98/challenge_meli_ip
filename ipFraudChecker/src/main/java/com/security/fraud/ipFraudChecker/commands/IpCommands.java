@@ -3,11 +3,14 @@ package com.security.fraud.ipFraudChecker.commands;
 import com.security.fraud.ipFraudChecker.entity.IpInfoEntity;
 import com.security.fraud.ipFraudChecker.service.EstadisticasService;
 import com.security.fraud.ipFraudChecker.service.IpService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
+
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
@@ -18,7 +21,6 @@ public class IpCommands {
 
     private final EstadisticasService estadisticasService;
     private final IpService ipService;
-    private static final Logger logger = LoggerFactory.getLogger(IpCommands.class);
 
     public IpCommands(EstadisticasService estadisticasService, IpService ipService) {
         this.estadisticasService = estadisticasService;
@@ -30,19 +32,8 @@ public class IpCommands {
         ipService.getIpInfo(ip)
                 .flatMap(this::formatIpInfo)
                 .doOnNext(System.out::println)
-                .doOnError(e -> logger.error("Error al trazar la IP: {}", e.getMessage()))
                 .subscribe();
     }
-
-    public void testTraceip(String ip) {
-        ipService.getIpInfo(ip)
-                .flatMap(this::formatIpInfo)
-                .doOnNext(System.out::println)
-                .doOnError(e -> logger.error("Error al trazar la IP: {}", e.getMessage()))
-                .subscribe();
-    }
-
-
 
     private Mono<String> formatIpInfo(IpInfoEntity ipInfo) {
         // Obtener las distancias

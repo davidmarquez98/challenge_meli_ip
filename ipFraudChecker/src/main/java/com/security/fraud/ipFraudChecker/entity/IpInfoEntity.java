@@ -17,7 +17,7 @@ public class IpInfoEntity {
     @Column("ip_address")
     private String ipAddress;
 
-    @Column("datetime")  // Asegúrate de que la columna en la base de datos se llame exactamente 'datetime'
+    @Column("datetime")
     private String datetime;
 
     @Column("country")

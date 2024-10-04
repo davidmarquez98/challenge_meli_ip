@@ -21,17 +21,13 @@ public class EstadisticasService {
                     EstadisticasEntity estadisticas = null;
 
                     if (estadisticasList.isEmpty()) {
-
                         estadisticas = new EstadisticasEntity();
                         estadisticas.setTotalEstimatedDistance(estimatedDistance);
                         estadisticas.setInvocationsCount(1);
-
                     }else{
-
                         estadisticas = estadisticasList.getFirst();
                         estadisticas.setTotalEstimatedDistance(estadisticas.getTotalEstimatedDistance() + estimatedDistance);
                         estadisticas.setInvocationsCount(estadisticas.getInvocationsCount() + 1);
-
                     }
 
                     return estadisticasRepository.save(estadisticas)

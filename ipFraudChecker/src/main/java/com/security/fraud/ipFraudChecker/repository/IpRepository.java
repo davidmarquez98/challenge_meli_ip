@@ -19,9 +19,6 @@ public interface IpRepository extends ReactiveSortingRepository<IpInfoEntity, Lo
     @Query("SELECT MAX(estimated_distance) FROM ip_info")
     Mono<Double> findMaxDistance();
 
-    @Query("SELECT AVG(estimated_distance) FROM ip_info")
-    Mono<Double> findAverageDistance();
-
     Mono<IpInfoEntity> save(IpInfoEntity ipInfoEntity);
 
 
