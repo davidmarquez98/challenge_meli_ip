@@ -1,16 +1,18 @@
 # Instrucciones para ejecutar la aplicación en Docker
 
 1. Clonar el repositorio (si es necesario).
+```
    git clone <url-del-repositorio>
    cd <nombre-del-repositorio>
+```
    
-2. Construir la aplicación.
+3. Construir la aplicación.
     mvn clean package
 
-3. Construir la imagen Docker.
+4. Construir la imagen Docker.
   docker build -t nombre-imagen .
 
-4. Ejecutar el contenedor.
+5. Ejecutar el contenedor.
    docker run -it --rm davidarielmarquez/ip-fraud-checker:latest
 
 
