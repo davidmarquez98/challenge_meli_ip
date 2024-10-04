@@ -1,9 +1,12 @@
 package com.security.fraud.ipFraudChecker.service;
 
+import com.security.fraud.ipFraudChecker.commands.IpCommands;
 import com.security.fraud.ipFraudChecker.entity.IpInfoEntity;
+import com.security.fraud.ipFraudChecker.kafka.KafkaProducer;
 import com.security.fraud.ipFraudChecker.mapper.IpInfoMapperImpl;
 import com.security.fraud.ipFraudChecker.mapper.IpInfoMapper;
 import com.security.fraud.ipFraudChecker.repository.IpRepository;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -15,9 +18,12 @@ public class IpService{
     private IpRepository ipRepository;
 
     @Autowired
-    private HttpIpService httpService;
+    KafkaProducer kafkaProducer;
 
-    private final IpInfoMapper ipInfoMapper = new IpInfoMapperImpl();
+    IpInfoMapper ipInfoMapper = new IpInfoMapperImpl();
+
+    IpCommands ipCommands = new IpCommands();
+
 
     public Mono<Double> getMinDistance() {
         return ipRepository.findMinDistance();
@@ -27,65 +33,34 @@ public class IpService{
         return ipRepository.findMaxDistance();
     }
 
-    public Mono<Double> getAverageDistance() {
-        return ipRepository.findAverageDistance();
-    }
 
+    public Mono<IpInfoEntity> getIpInfo(String ip) {
 
-    public Mono<IpInfoEntity> getIpInfo(String ip){
-        return getIpInfoExtern(ip);
-    }
-
-    private Mono<IpInfoEntity> getIpInfoExtern(String ip){
         return ipRepository.findByIpAddress(ip)
-
-                // Pais con dicho ip existe
+                .doOnError(error -> System.err.println("Error occurred: " + error.getMessage()))
                 .flatMap(ipInfoEntityFound -> {
-
-                    int invocations = ipInfoEntityFound.getInvocations();
-                    invocations = invocations + 1;
-                    ipInfoEntityFound.setInvocations(invocations);
-
-                    ipRepository.save(ipInfoEntityFound).subscribe();
-
-                    return Mono.just(ipInfoEntityFound);
+                    System.out.println("IP encontrada: " + ipInfoEntityFound);
+                    ipInfoEntityFound.setInvocations(ipInfoEntityFound.getInvocations() + 1);
+                    return ipRepository.save(ipInfoEntityFound);
                 })
-
-                // Pais con dicho ip no existe
-                .switchIfEmpty(Mono.defer(() -> buildIpInfoFromApi(ip)));
+                .switchIfEmpty(Mono.defer(() -> {
+                    System.out.println("Enviando IP a Kafka");
+                    kafkaProducer.sendIpRequest(ip);
+                    return Mono.empty();
+                }));
     }
 
-    private Mono<IpInfoEntity> buildIpInfoFromApi(String ip){
 
+    public void receiveResponseFromKafka(JSONObject jsonResponse){
         IpInfoEntity ipInfoEntity = new IpInfoEntity();
-        ipInfoEntity.setIpAddress(ip);
 
-        return httpService.callApiCountryByIp(ip)
-                .doOnSuccess(savedEntity -> System.out.println("callApiCountryByIp: " + savedEntity))
-                .flatMap(countryApiResponse -> {
+        ipInfoMapper.fromJsonToEntity(jsonResponse, ipInfoEntity);
+        ipRepository.save(ipInfoEntity);
 
-                    ipInfoMapper.fromJsonToEntity(countryApiResponse, ipInfoEntity);
-
-                    return httpService.callApiCountryInfoByName(ipInfoEntity.getCountry())
-                            .doOnSuccess(savedEntity -> System.out.println("callApiCountryInfoByName: " + savedEntity));
-                })
-                .flatMap(countryInfoApiResponse -> {
-
-                    ipInfoMapper.fromJsonToEntity(countryInfoApiResponse, ipInfoEntity);
-
-                    return httpService.callApiConversionCurrency(ipInfoEntity.getCurrency())
-                            .doOnSuccess(savedEntity -> System.out.println("callApiConversionCurrency: " + savedEntity));
-                })
-                .flatMap(currencyApiResponse -> {
-
-                    ipInfoMapper.fromJsonToEntity(currencyApiResponse, ipInfoEntity);
-                    ipInfoEntity.setInvocations(1);
-
-                    return ipRepository.save(ipInfoEntity);
-                })
-                .doOnSuccess(savedEntity -> System.out.println("Guardado: " + savedEntity))
-                .doOnError(error -> System.err.println("Error al guardar la entidad: " + error.getMessage()));
+        ipCommands.showIpInfo(ipInfoEntity);
     }
 
+
+    IpInfoEntity ipInfoEntity = new IpInfoEntity();
 }
 

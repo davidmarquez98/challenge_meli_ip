@@ -9,37 +9,33 @@ import org.springframework.kafka.annotation.KafkaListener;
 public class KafkaConsumer {
 
     HttpIpService httpIpService = new HttpIpService();
-    KafkaProducer kafkaProducer = new KafkaProducer();
+    KafkaProducer kafkaProducer;
     IpResponseMapper ipResponseMapper = new IpResponseMapperImpl();
 
     @KafkaListener(topics = "request-topic", groupId = "ip-group")
     private void listen(String ip){
 
-        IpInfoResponse ipInfoEntity = new IpInfoResponse();
-        ipInfoEntity.setIpAddress(ip);
+        IpInfoResponse ipInfoResponse = new IpInfoResponse();
+        ipInfoResponse.setIpAddress(ip);
 
         httpIpService.callApiCountryByIp(ip)
                 .doOnSuccess(savedEntity -> System.out.println("callApiCountryByIp: " + savedEntity))
                 .flatMap(countryApiResponse -> {
 
-                    ipResponseMapper.fromJsonToResponse(countryApiResponse, ipInfoEntity);
-
-                    return httpIpService.callApiCountryInfoByName(ipInfoEntity.getCountry())
+                    ipResponseMapper.fromJsonToResponse(countryApiResponse, ipInfoResponse);
+                    return httpIpService.callApiCountryInfoByName(ipInfoResponse.getCountry())
                             .doOnSuccess(savedEntity -> System.out.println("callApiCountryInfoByName: " + savedEntity));
                 })
                 .flatMap(countryInfoApiResponse -> {
 
-                    ipResponseMapper.fromJsonToResponse(countryInfoApiResponse, ipInfoEntity);
-
-                    return httpIpService.callApiConversionCurrency(ipInfoEntity.getCurrency())
+                    ipResponseMapper.fromJsonToResponse(countryInfoApiResponse, ipInfoResponse);
+                    return httpIpService.callApiConversionCurrency(ipInfoResponse.getCurrency())
                             .doOnSuccess(savedEntity -> System.out.println("callApiConversionCurrency: " + savedEntity));
                 })
-                .flatMap(currencyApiResponse -> {
+                .doOnNext(currencyApiResponse -> {
 
-                    ipResponseMapper.fromJsonToResponse(currencyApiResponse, ipInfoEntity);
-
-                    // ENVIAR KAFKA
-                    return null;
+                    ipResponseMapper.fromJsonToResponse(currencyApiResponse, ipInfoResponse);
+                    kafkaProducer.sendIpRequest(ipInfoResponse);
                 })
                 .doOnSuccess(savedEntity -> System.out.println("Guardado: " + savedEntity))
                 .doOnError(error -> System.err.println("Error al guardar la entidad: " + error.getMessage()));
