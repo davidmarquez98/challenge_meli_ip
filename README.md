@@ -6,17 +6,17 @@
    cd <nombre-del-repositorio>
 ```
    
-3. Construir la aplicación.
+2. Construir la aplicación.
 ```
     mvn clean package
 ```
 
-5. Construir la imagen Docker.
+3. Construir la imagen Docker.
 ```
   docker build -t nombre-imagen .
 ```
 
-7. Ejecutar el contenedor.
+4. Ejecutar el contenedor.
 ```
    docker run -it --rm davidarielmarquez/ip-fraud-checker:latest
 ```
