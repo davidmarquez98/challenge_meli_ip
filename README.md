@@ -1,4 +1,4 @@
-# Instrucciones para Ejecutar la Aplicación en Docker
+# Instrucciones para ejecutar la aplicación en Docker
 
 1. Clonar el repositorio (si es necesario).
    git clone <url-del-repositorio>
