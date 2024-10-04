@@ -35,7 +35,6 @@ public class EstadisticasService {
                     }
 
                     return estadisticasRepository.save(estadisticas)
-                            .doOnSuccess(System.out::println)
                             .map(nuevasEstadisticas -> nuevasEstadisticas.getInvocationsCount() > 0 ?
                                     nuevasEstadisticas.getTotalEstimatedDistance() / nuevasEstadisticas.getInvocationsCount() : 0.0 );
 

@@ -66,52 +66,5 @@ public class HttpIpClient{
         }
     }
 
-//    public Mono<JSONObject> fetchApi(String url) {
-//        return webClient
-//                .get()
-//                .uri(url)
-//                .retrieve()
-//                .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(),
-//                        clientResponse -> {
-//                            // Registrar el código de estado y cuerpo del error
-//                            return clientResponse.bodyToMono(String.class)
-//                                    .flatMap(errorBody -> {
-//                                        System.err.println("HTTP Status: " + clientResponse.statusCode());
-//                                        System.err.println("Error body: " + errorBody);
-//                                        return Mono.error(new RuntimeException("Error fetching data: " + clientResponse.statusCode()));
-//                                    });
-//                        })
-//
-//                .bodyToMono(String.class)
-//                .map(responseBody -> {
-//
-//                    JSONObject jsonObjectResponse = null;
-//
-//                    try {
-//
-//                        if (responseBody.trim().startsWith("[")) {
-//                            JSONArray jsonArray = new JSONArray(responseBody);
-//
-//                            if (!jsonArray.isEmpty()) {
-//                                jsonObjectResponse = jsonArray.getJSONObject(0);
-//                            }
-//                        } else {
-//                            jsonObjectResponse = new JSONObject(responseBody);
-//                        }
-//
-//                    } catch (JSONException e) {
-//                        throw new RuntimeException("Invalid JSON response", e);
-//                    }
-//
-//                    return jsonObjectResponse;
-//                })
-//                .doOnSuccess(result -> {
-//
-//                })
-//                .doOnError(error -> {
-//
-//                });
-//    }
-
 }
 

@@ -1,6 +1,5 @@
 package com.security.fraud.ipFraudChecker.mapper;
 
-import com.security.fraud.ipFraudChecker.dto.IpInfoDTO;
 import com.security.fraud.ipFraudChecker.entity.IpInfoEntity;
 import com.security.fraud.ipFraudChecker.utils.DistanceCalculator;
 import org.json.JSONArray;
@@ -9,10 +8,10 @@ import org.json.JSONObject;
 import java.time.format.DateTimeFormatter;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class IpInfoMapperImpl implements IpInfoMapper{
 
@@ -34,18 +33,11 @@ public class IpInfoMapperImpl implements IpInfoMapper{
 
 
         if (timezones != null) {
-            StringBuilder fullMessageTimeZone = new StringBuilder();
-
-            for (int i = 0; i < timezones.length(); i++) {
-                String timezone = timezones.getString(i);
-                fullMessageTimeZone.append(getFormattedTime(timezone));
-
-                if (i + 1 < timezones.length()) {
-                    fullMessageTimeZone.append(" o ");
-                }
-            }
-
-            ipInfoEntity.setCurrentLocalTime(fullMessageTimeZone.toString());
+            String fullMessageTimeZone = IntStream.range(0, timezones.length())
+                    .parallel()
+                    .mapToObj(i -> getFormattedTime(timezones.getString(i)))
+                    .collect(Collectors.joining(" o "));
+            ipInfoEntity.setCurrentLocalTime(fullMessageTimeZone);
         }
 
 
@@ -62,16 +54,9 @@ public class IpInfoMapperImpl implements IpInfoMapper{
             double argentinaLat = -34.0;
             double argentinaLon = -64.0;
 
-//            String fullMessageDistancia = "";
-//
-//            double distanciaPaisIp = DistanceCalculator.calculateDistance(latitudPaisIp, longitudPaisIp, argentinaLat, argentinaLon);
-//            distanciaPaisIp = Math.round(distanciaPaisIp * 100.0) / 100.0;
-//
-//            fullMessageDistancia = distanciaPaisIp + " kms (" + argentinaLat + ", " + argentinaLon + ") a (" + latitudPaisIp + ", " + longitudPaisIp + ")";
-//            ipInfoEntity.setEstimatedDistance(fullMessageDistancia);
-
             Double distanciaPaisIp = DistanceCalculator.calculateDistance(latitudPaisIp, longitudPaisIp, argentinaLat, argentinaLon);
             String fullMessageDistancia = String.format("%.2f kms (%f, %f) a (%f, %f)", distanciaPaisIp, argentinaLat, argentinaLon, latitudPaisIp, longitudPaisIp);
+
             ipInfoEntity.setMessageEstimatedDistance(fullMessageDistancia);
             ipInfoEntity.setEstimatedDistance(distanciaPaisIp);
         }
@@ -81,22 +66,6 @@ public class IpInfoMapperImpl implements IpInfoMapper{
                     .map(Object::toString)
                     .collect(Collectors.joining(", "));
             ipInfoEntity.setLanguages(idiomasStr);
-//            JSONObject languages = jsonObject.getJSONObject("languages");
-//            StringBuilder idiomas = new StringBuilder();
-//
-//            Iterator<String> keys = languages.keys();
-//            while (keys.hasNext()) {
-//                String key = keys.next();
-//                String language = languages.getString(key);
-//                idiomas.append(language);
-//
-//                if (keys.hasNext()) {
-//                    idiomas.append(", ");
-//                }
-//            }
-//
-//            String idiomasStr = idiomas.toString();
-//            ipInfoEntity.setLanguages(idiomasStr);
         }
 
         if (currencies != null) {
@@ -125,8 +94,5 @@ public class IpInfoMapperImpl implements IpInfoMapper{
             return String.format("%s (UTC%s)", nowInLocal.format(formatter), tz.replace("UTC", ""));
         });
     }
-
-    @Override
-    public void fromEntityToModel(IpInfoEntity ipInfoEntity, IpInfoDTO ipInfoDTO) {}
 
 }
